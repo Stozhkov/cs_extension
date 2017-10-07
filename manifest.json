@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Teleoka",
-  "description" : "Приложение помогает абонентам ООО ТелеОка ком следить за состоянием своего лицевого счета.",
-  "version": "1.4.3",
+  "name": "CS Monitoring",
+  "description" : "Приложение помогает поклонникам игры Counter Strike следить за своим игровым сервером и быстро получать доступ к статистике.",
+  "version": "1.0",
   "icons": { "36": "512.png",
              "48": "512.png",
              "72": "512.png",
@@ -19,7 +19,7 @@
     "alarms"
   ],
   "browser_action": {
-    "default_title": "Телеока ком",
+    "default_title": "CS Monitoring",
     "default_popup": "popup.html"
   }
 }

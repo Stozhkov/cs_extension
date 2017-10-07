@@ -1,36 +1,13 @@
-function setBadgeText(amountDays, blocked) {
+function setBadgeText(amountDays) {
 
-    if (amountDays == "X") {
-        chrome.browserAction.setBadgeBackgroundColor({ color: [204, 0, 0, 255] });
-        chrome.browserAction.setBadgeText({text: amountDays.toString()});
-    } else if (amountDays == "!") {
-        chrome.browserAction.setBadgeBackgroundColor({ color: [204, 0, 0, 255] });
-        chrome.browserAction.setBadgeText({text: amountDays.toString()});
-    } else {
-
-        if(blocked == 1) {
-            chrome.browserAction.setBadgeBackgroundColor({ color: [204, 0, 0, 255] });
-            chrome.browserAction.setBadgeText({text: "!"});
-        }
-        else {
-            if (amountDays == 0) {
-                chrome.browserAction.setBadgeText({text: ""});
-            }
-            else if ((amountDays < 6) && (amountDays > 0)) {
-                chrome.browserAction.setBadgeText({text: amountDays.toString()});
-                chrome.browserAction.setBadgeBackgroundColor({ color: [204, 0, 0, 255] });
-            } else {
-                chrome.browserAction.setBadgeText({text: amountDays.toString()});
-                chrome.browserAction.setBadgeBackgroundColor({ color: [128, 128, 128, 255] });
-            }
-        }
-    }
+    chrome.browserAction.setBadgeText({text: amountDays.toString()});
+    chrome.browserAction.setBadgeBackgroundColor({ color: [128, 128, 128, 255] });
 }
 
 function loadDataFromServer() {
 
-    var uid = userData.uid;
-    var password = userData.pwd;
+    var uid = serverData.ip;
+    var password = serverData.port;
 
 
 
@@ -38,7 +15,7 @@ function loadDataFromServer() {
 
         var xhr = new XMLHttpRequest();
 
-        xhr.open("POST", "http://abonent.teleoka.su/chrome-extensions-gate.php", true);
+        xhr.open("POST", "http://abonent.teleoka.su/cs-test/index.php", true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.timeout = 5000;
 
@@ -51,37 +28,39 @@ function loadDataFromServer() {
 
                     var json = xhr.responseText;
 
-                    if (JSON.parse(json).state == 1) {
+                    if (JSON.parse(json).status == 1) {
 
-                        setBadgeText(JSON.parse(json).day_before_lock, JSON.parse(json).blocked);
+                        setBadgeText(JSON.parse(json).players);
+
+                    } else if (JSON.parse(json).status == 1) {
+
+                        setBadgeText("X");
 
                     }
                 }
             }
         }
-        xhr.send("uid="
-            + uid +"&password="
-            + password +"&version="
-            + chrome.app.getDetails().version +"&r="
-            + Math.random());
+        xhr.send("ip="
+            + serverData.ip +"&ip="
+            + serverData.port +"&port=");
     }
 }
 
 function load() {
-    chrome.storage.sync.get('userUID', function (result) {
+    chrome.storage.sync.get('userIP', function (result) {
 
-        if(result.userUID) {
+        if(result.userIP) {
 
-            userData.uid = result.userUID;
+            serverData.ip = result.userIP;
 
         }
     });
 
-    chrome.storage.sync.get('userPassword', function (result) {
+    chrome.storage.sync.get('userPort', function (result) {
 
-        if(result.userPassword) {
+        if(result.userPort) {
 
-           userData.pwd = result.userPassword;
+           serverData.port = result.userPort;
 
         }
 
@@ -89,15 +68,15 @@ function load() {
     });
 }
 
-var userData = new Object();
-userData.uid = "";
-userData.pwd = "";
+var serverData = new Object();
+serverData.ip = "";
+serverData.port = "";
 
 chrome.alarms.onAlarm.addListener(function() {
     load();
 });
 
-chrome.alarms.create('', { periodInMinutes: 120 });
+chrome.alarms.create('', { periodInMinutes: 1 });
 
 chrome.browserAction.setBadgeText({text: ""});
 
